@@ -20,7 +20,7 @@ goto :eof
 	if %time:~9,1% lss 3 (set "main_color=0x0c") else if %time:~9,1% lss 6 (set "main_color=0x0a") else if %time:~9,1% lss 9 (set "main_color=0x09") else (set "main_color=0x09")
 	call :logo
 
-	if not exist "images" md "images"
+	if not exist "screenshots" md "screenshots"
 	if exist "raw.tmp" del /f /q "raw.tmp" >nul
 
 	set "charset=qwertyuiopasdfghjklzxcvbnm1234567890"
@@ -36,7 +36,7 @@ goto :eof
 	set /a author=!ypos!+5
 
 	echo -g 5 !author! -c 0x0f -d "▒" -c 0x08 -d " Made with " -c %main_color% -d "♥" -c 0x08 -d " by " -c 0x0f -d "hXR16F" -r
-	for /f %%i in ('pushD images ^& dir /b ^& popD') do set /a total_files+=1
+	for /f %%i in ('pushD screenshots ^& dir /b ^& popD') do set /a total_files+=1
 
 	goto :main
 
@@ -55,10 +55,10 @@ goto :eof
 				set "file=%%~nxz"
 				echo !link! | findstr /c:image.prntscr.com >nul && (
 					for /f "tokens=4 delims=/" %%z in ("!link!") do (
-						curl -H "User-Agent: %ua%" -ss !link! -o images/%%z
+						curl -H "User-Agent: %ua%" -ss !link! -o screenshots/%%z
 						set /a total_downloaded+=1
 						set /a total_files+=1
-						for /f "tokens=3 delims= " %%n in ('pushD images ^& dir ^| findstr /c:"!file!" ^& popD') do echo -g 5 !downloading! -d "%line_reset%" -g 5 !downloading! -c 0x0f -d "▒" -c %main_color% -d " Last download: " -c 0x0f -d "!file! " -c %main_color% -d "[" -c 0x08 -d "%%n bytes" -c %main_color% "]"
+						for /f "tokens=3 delims= " %%n in ('pushD screenshots ^& dir ^| findstr /c:"!file!" ^& popD') do echo -g 5 !downloading! -d "%line_reset%" -g 5 !downloading! -c 0x0f -d "▒" -c %main_color% -d " Last download: " -c 0x0f -d "!file! " -c %main_color% -d "[" -c 0x08 -d "%%n bytes" -c %main_color% "]"
 					)
 				)
 			)
