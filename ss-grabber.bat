@@ -23,12 +23,15 @@ goto :eof
 	if not exist "screenshots" md "screenshots"
 	if exist "raw.tmp" del /f /q "raw.tmp" >nul
 
-	set "charset=qwertyuiopasdfghjklzxcvbnm1234567890"
-	set "ua=Mozilla/5.0 ^(Macintosh; Intel Mac OS X 10_11_6^) AppleWebKit/537.36 ^(KHTML, like Gecko^) Chrome/70.0.3538.102 Safari/537.36"
-	set "line_reset=                                                                             "
-	set total_downloaded=0
-	set total_fetched=0
-	set total_files=0
+	(
+		set "charset=qwertyuiopasdfghjklzxcvbnm1234567890"
+		set "ua=Mozilla/5.0 ^(Macintosh; Intel Mac OS X 10_11_6^) AppleWebKit/537.36 ^(KHTML, like Gecko^) Chrome/70.0.3538.102 Safari/537.36"
+		set "line_reset=                                                                             "
+
+		set total_downloaded=0
+		set total_fetched=0
+		set total_files=0
+	)
 
 	set /a fetching=!ypos!+1
 	set /a downloading=!ypos!+2
@@ -46,7 +49,7 @@ goto :eof
 
 	echo -g 5 !fetching! -d "%line_reset%" -g 5 !fetching! -c 0x0f -d "▒" -c %main_color% -d " Fetching: " -c 0x0f -d "!url!"
 	curl -H "User-Agent: %ua%" -ss https://prnt.sc/!url! -o raw.tmp
-	for /f "tokens=3 delims= " %%i in ('dir ^| findstr /c:"raw.tmp"') do echo -g 24 !fetching! -c %main_color% -d "[" -c 0x08 -d "%%i bytes" -c %main_color% "]"
+	for /f %%i in ("raw.tmp") do echo -g 24 !fetching! -c %main_color% -d "[" -c 0x08 -d "%%~zi bytes" -c %main_color% "]"
 
 	for /f "tokens=13,15 delims=>" %%a in ('find "no-click screenshot-image" raw.tmp') do (
 		for /f "tokens=3 delims==" %%i in ("%%a") do (
@@ -58,7 +61,7 @@ goto :eof
 						curl -H "User-Agent: %ua%" -ss !link! -o screenshots/%%z
 						set /a total_downloaded+=1
 						set /a total_files+=1
-						for /f "tokens=3 delims= " %%n in ('pushD screenshots ^& dir ^| findstr /c:"!file!" ^& popD') do echo -g 5 !downloading! -d "%line_reset%" -g 5 !downloading! -c 0x0f -d "▒" -c %main_color% -d " Last download: " -c 0x0f -d "!file! " -c %main_color% -d "[" -c 0x08 -d "%%n bytes" -c %main_color% "]"
+						pushD screenshots & for /f %%n in ("!file!") do set /a size=%%~zn / 1024 & echo -g 5 !downloading! -d "%line_reset%" -g 5 !downloading! -c 0x0f -d "▒" -c %main_color% -d " Last download: " -c 0x0f -d "!file! " -c %main_color% -d "[" -c 0x08 -d "!size! kB" -c %main_color% "]" & popD
 					)
 				)
 			)
